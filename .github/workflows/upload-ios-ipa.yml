@@ -1,0 +1,72 @@
+name: 上传 iOS IPA 到 App Store Connect
+
+on:
+  workflow_dispatch:
+    inputs:
+      ipa_path:
+        description: "GitHub Actions 运行环境中的 .ipa 文件路径"
+        required: true
+        default: "dist/sohobao-1.4.2.ipa"
+      release_notes:
+        description: "可选：TestFlight 更新说明"
+        required: false
+        default: ""
+      uses_non_exempt_encryption:
+        description: "如果 App 使用了非豁免加密能力，选择 true"
+        required: true
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+      wait_for_processing:
+        description: "是否等待 App Store Connect 处理构建完成"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    name: 上传 IPA
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: 拉取仓库代码
+        uses: actions/checkout@v4
+
+      # 如果后续要在 CI 里用 uniapp/HBuilderX 生成 .ipa，
+      # 请把打包命令放到这里，并确保输出路径与 ipa_path 一致。
+      # 注意：GitHub Actions 不能直接读取你本机的 E:\... 文件路径。
+      - name: 校验 IPA 文件路径
+        shell: bash
+        run: |
+          IPA_PATH="${{ inputs.ipa_path }}"
+          if [[ ! -f "$IPA_PATH" ]]; then
+            echo "::error title=未找到 IPA::找不到 '$IPA_PATH'，请先在 workflow 中构建、下载，或把 IPA 放到该路径。"
+            exit 1
+          fi
+          if [[ "$IPA_PATH" != *.ipa ]]; then
+            echo "::error title=文件类型错误::期望上传 .ipa 文件，当前是 '$IPA_PATH'。"
+            exit 1
+          fi
+          ls -lh "$IPA_PATH"
+
+      - name: 上传 IPA 到 TestFlight
+        uses: apple-actions/upload-testflight-build@v5.2.1
+        with:
+          app-path: ${{ inputs.ipa_path }}
+          app-type: ios
+          issuer-id: e278c62f-a5f2-4d9e-a72e-554d0b604a6d
+          api-key-id: A8CWSNDUUT
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+          release-notes: ${{ inputs.release_notes }}
+          uses-non-exempt-encryption: ${{ inputs.uses_non_exempt_encryption }}
+          wait-for-processing: ${{ inputs.wait_for_processing }}
+          backend: appstore-api
