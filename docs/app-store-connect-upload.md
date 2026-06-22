@@ -70,4 +70,4 @@ E:\Program Files\wx\xwechat_files\yz1810_347d\temp\RWTemp\2026-06\a031f0ad6d09f5
 
 - workflow 使用 `apple-actions/upload-testflight-build` 的 `appstore-api` 后端，不需要安装 Transporter 桌面端。
 - 上传成功后，构建版本会先进入 App Store Connect 处理队列，处理完成后才能在 TestFlight 或提交审核页面里看到。
-- 如果 App 使用非豁免加密能力，运行时把 `uses_non_exempt_encryption` 改成 `true`。
+- 加密合规状态建议在 App Store Connect 后台设置。workflow 不再传 `uses-non-exempt-encryption`，避免构建已经设置过该字段时出现 `You cannot update when the value is already set` 的 409 错误。

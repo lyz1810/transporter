@@ -11,14 +11,6 @@ on:
         description: "可选：TestFlight 更新说明"
         required: false
         default: ""
-      uses_non_exempt_encryption:
-        description: "如果 App 使用了非豁免加密能力，选择 true"
-        required: true
-        default: "false"
-        type: choice
-        options:
-          - "false"
-          - "true"
       wait_for_processing:
         description: "是否等待 App Store Connect 处理构建完成"
         required: true
@@ -67,6 +59,5 @@ jobs:
           api-key-id: A8CWSNDUUT
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
           release-notes: ${{ inputs.release_notes }}
-          uses-non-exempt-encryption: ${{ inputs.uses_non_exempt_encryption }}
           wait-for-processing: ${{ inputs.wait_for_processing }}
           backend: appstore-api

@@ -1,2 +1,5 @@
 # App Store Connect API private keys must never be committed.
 *.p8
+
+# Local IDE settings.
+.idea/
