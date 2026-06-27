@@ -6,7 +6,7 @@ on:
       ipa_path:
         description: "GitHub Actions 运行环境中的 .ipa 文件路径"
         required: true
-        default: "dist/sohobao-1.4.2.ipa"
+        default: "dist/sohobao.ipa"
       release_notes:
         description: "可选：TestFlight 更新说明"
         required: false
